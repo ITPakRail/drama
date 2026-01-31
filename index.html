@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>drama.pakrail.online</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0a0a; color: #eee; margin: 0; padding: 0; }
+        
+        /* Heading Styles */
+        .brand-header { background: #000; text-align: center; padding: 15px 0 5px 0; }
+        .domain-name { font-size: 1.2rem; color: #888; letter-spacing: 2px; text-transform: lowercase; margin-bottom: 5px; }
+        .super-hit { background: #008439; color: #fff; padding: 10px 0; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 15px; }
+
+        /* Table Structure (Mobile Responsive) */
+        table { width: 100%; border-collapse: separate; border-spacing: 15px; table-layout: fixed; }
+        td { 
+            background: #151515; border: 1px solid #333; border-radius: 12px; 
+            cursor: pointer; transition: 0.3s; vertical-align: top; overflow: hidden;
+        }
+        td:hover { transform: translateY(-5px); border-color: #008439; }
+
+        .img-container { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; overflow: hidden; }
+        .drama-img { width: 100%; height: 100%; object-fit: cover; display: block; position: relative; z-index: 2; }
+        
+        .fallback-text { 
+            position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 1rem; color: #444; text-align: center; padding: 10px; z-index: 1;
+        }
+
+        .title-bar { padding: 12px; text-align: center; font-weight: 600; font-size: 1.1rem; border-top: 1px solid #222; }
+
+        /* Modal Settings */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; }
+        .modal-content { width: 98%; height: 95%; margin: 1% auto; background: #fff; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+        .modal-header { background: #000; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { background: #d32f2f; color: #fff; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        iframe { flex: 1; width: 100%; border: none; }
+
+        /* Mobile Responsive Logic */
+        @media (max-width: 600px) {
+            table, tbody, tr, td { display: block; width: 100%; }
+            td { margin-bottom: 20px; }
+            .super-hit { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand-header">
+    <div class="domain-name">drama.pakrail.online</div>
+    <div class="super-hit">Super Hit Drama</div>
+</div>
+
+<div class="container">
+    <table id="portalGrid"></table>
+</div>
+
+<div id="videoModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span id="dramaLabel" style="font-weight:bold; color:#008439;">Loading...</span>
+            <button class="close-btn" onclick="closeModal()">CLOSE ✖</button>
+        </div>
+        <iframe id="targetFrame" src=""></iframe>
+    </div>
+</div>
+
+<script>
+    // These IDs are extracted from your Google Drive links
+    const DRAMA_LIST = [
+        { name: "Pehli Barish", url: "https://harpalgeo.tv/program/Pehli-Barish", driveId: "1Z1jidS4qpim33ScoerT3nU6gH_JHlW9c" },
+        { name: "Sultan Salahuddin S2", url: "https://hum.tv/dramas/sultan-salahuddin-ayyubi-s2/", driveId: "1Qz5USAk7CTyP1kmKlHF04vw0eWMpdZnp" },
+        { name: "Mann Jogi", url: "https://hum.tv/dramas/mann-jogi/", driveId: "1Q_6BBv5hJqI499XzrPrc8IY0NHm9RATg" },
+        { name: "Sultanat", url: "https://hum.tv/dramas/sultanat/", driveId: "1Y0HpsBoMqngbBAPfNgWya3C3-DKBfEy4" },
+        { name: "Tere Mere Sapnay", url: "https://geokahani.tv/tere-mere-sapnay/", driveId: "1NGNous6n3GAZe_sxfX-mlHTg--OoCzlT" },
+        { name: "Kurulus Osman S5", url: "https://geokahani.tv/kurulus-osman-season-five/", driveId: "10xndnAwHisama7vgpUIekzzZ-lOoY3VJ" },
+        { name: "Green Entertainment", url: "https://greenentertainment.tv/ost/186", driveId: "1j2UphmN4duNMGYCe1FQM4PjL37BAfnXL" }
+    ];
+
+    function renderPortal() {
+        const table = document.getElementById('portalGrid');
+        let currentRow;
+        
+        DRAMA_LIST.forEach((item, index) => {
+            if (index % 2 === 0) currentRow = table.insertRow();
+            
+            const cell = currentRow.insertCell();
+            
+            // Direct Google Drive Image Fix
+            const directImg = `https://lh3.googleusercontent.com/d/${item.driveId}`;
+            
+            cell.onclick = () => openModal(item.url, item.name);
+            cell.innerHTML = `
+                <div class="img-container">
+                    <div class="fallback-text">Loading Poster...</div>
+                    <img src="${directImg}" class="drama-img" referrerpolicy="no-referrer" onerror="this.style.opacity='0'">
+                </div>
+                <div class="title-bar">${item.name}</div>
+            `;
+        });
+    }
+
+    function openModal(link, name) {
+        document.getElementById('dramaLabel').innerText = "WATCHING: " + name;
+        document.getElementById('targetFrame').src = link;
+        document.getElementById('videoModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('videoModal').style.display = "none";
+        document.getElementById('targetFrame').src = "";
+    }
+
+    window.onload = renderPortal;
+</script>
+</body>
+</html>
